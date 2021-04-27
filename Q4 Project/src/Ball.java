@@ -20,4 +20,7 @@ public class Ball {
 			g.fillOval(x, y, width, width);
 			x++; // if x is constantly updating, the ball should move to the right IF the paint method is called repeatedly with actionPerformed
 		}
+		public void deleteThis() {
+			
+		}
 }
