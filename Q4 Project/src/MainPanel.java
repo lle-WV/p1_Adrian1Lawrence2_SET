@@ -1,68 +1,72 @@
-import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.Timer;
 
-public class MainPanel extends JPanel implements ActionListener, KeyListener {
-	//handles drawing animation
-	Timer animationTimer;
-	Ball b;
+public class MainPanel implements MouseListener {
+	//size of the grid
+	int gridRows = 3; 
+	int gridCols = 3;
+	Tile[][] tiles = new Tile[gridRows][gridCols];
+
+	//constructor for the mainpanel class
+	public MainPanel(){
+
+	//create a JFrame object with title
+	JFrame f = new JFrame("SET");
+
+	//Set the size of the window
+	f.setSize(800,800);
+
+	//exit on close method
+	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	f.setLayout(new GridLayout(gridRows,gridCols));
+
+	//setup the board
+	for(int r = 0; r < tiles.length; r++){
+		for(int c = 0; c < tiles[r].length; c++){
+			tiles[r][c] = new Tile("queen.jpg", r, c);
+			
+ 
+			//add the title to the jframe
+			f.add(tiles[r][c]);
 	
-	public void paint(Graphics g) {
-		super.paintComponent(g);//wipes the previous paint screen
-		b.paint(g);
+			//add mouse listener
+			tiles[r][c].addMouseListener(this);
+		}
 	}
 
-	public MainPanel() {
-		JFrame f = new JFrame("Window name here");
-		f.setSize(800,600); //width and height of window
-		
-		//set default action for x button
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		//add this panel to the JFrame
-		//allows connection with "drawing"
-		f.add(this);
-		
-		//setup animation timer
-		animationTimer = new Timer(16, this); 
-		animationTimer.start();
-		
-		//instantiate the rest of the instance variables
-		b = new Ball();
-		
-		f.setVisible(true);
-	}
-	
-	//this method is invoked/called by the timer
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		//call the frame to refresh
-		repaint();
-	}
+	f.setVisible(true);
+}
 
 	@Override
-	public void keyPressed(KeyEvent arg0) {
+	public void mouseClicked(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
+	public void mouseEntered(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void keyTyped(KeyEvent arg0) {
+	public void mouseExited(MouseEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }
