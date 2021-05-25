@@ -21,8 +21,17 @@ public class MainPanel implements MouseListener {
 
 	//exit on close method
 	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	f.setLayout(new GridLayout(gridRows,gridCols));
-
+	
+	//GridLayout object
+	GridLayout layout = new GridLayout(gridRows, gridCols);
+	
+	//set H and Vgaps
+	layout.setHgap(10);
+	layout.setVgap(10);
+	f.setLayout(layout);
+	
+	//set visible to false until player selects start
+	
 	//setup the board
 	for(int r = 0; r < tiles.length; r++){
 		for(int c = 0; c < tiles[r].length; c++){
