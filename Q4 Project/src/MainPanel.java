@@ -17,7 +17,7 @@ public class MainPanel implements MouseListener {
 	JFrame f = new JFrame("SET");
 
 	//Set the size of the window
-	f.setSize(800,800);
+	f.setSize(700,1000); //makes the tiles just the right size if each card is decreased to 20% size
 
 	//exit on close method
 	f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
