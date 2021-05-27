@@ -35,12 +35,12 @@ public class MainPanel implements MouseListener {
 	//setup the board
 	for(int r = 0; r < tiles.length; r++){
 		for(int c = 0; c < tiles[r].length; c++){
-			tiles[r][c] = new Tile("dmRedHashed3.jpg", r, c);
+			tiles[r][c] = new Tile("queen.jpg", r, c);
 			
 			//testing the card images on jFrame
-			//tiles[0][0] = new Tile("dmRedHashed.jpg", r, c);
-			//tiles[0][1] = new Tile("sqBlueHashed.jpg", r, c);
-			//tiles[2][1] = new Tile("lnGreenHol.jpg", r, c);
+			tiles[0][0] = new Tile("dmRedHashed3.jpg", r, c);
+			tiles[0][1] = new Tile("dmPurpleHashed1.jpg", r, c);
+			tiles[2][1] = new Tile("lnRedFull1.jpg", r, c);
 			//add the title to the jFrame
 			f.add(tiles[r][c]);
 	
