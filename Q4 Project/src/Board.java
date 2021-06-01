@@ -1,107 +1,41 @@
-import java.util.ArrayList;
+import java.awt.Color;
+import java.awt.Toolkit;
 
-public class Board {
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 
-	private ArrayList<Card> deck;
-	private ArrayList<Card> table;
-	private ArrayList<Card> discard;
+public class Tile extends JButton{
 
-	public Board() {
+	private Color color;
+	ImageIcon img1, img2; //add any other images
+	int r, c; //possible location variables
 
-		for (int i = 0; i < 3; i++) {
+	public Tile(String fileName){
+		super(); //call parent Constructor
+		color = Color.white;
 
-			for (int j = 0; j < 3; j++) {
+		//setup icon image
+		img1 = new ImageIcon(Tile.class.getResource(fileName));
+		//setup addition images here
 
-				for (int k = 0; k < 3; k++) {
-
-					for (int l = 0; l < 3; l++) {
-
-						deck.add(new Card(i, j, k, l));
-
-					}
-
-				}
-
-			}
-
-		}
-
-		deal();
-
+		//call parent helper methods with super
+		//this indicates it is from parent class
+		super.setIcon(img1);
+		super.setBackground(color);
 	}
 
-	public void deal() {
+	//second Tile constructor
+	public Tile(String fileName, int row, int col){
+		this(fileName);
 
-		int random;
-
-		for (int i = 0; i < 9 - table.size(); i++) {
-
-			random = (int) (Math.random() * deck.size());
-
-			table.add(deck.remove(random));
-
-		}
+		r = row;
+		c= col;
 
 	}
-
-	public boolean checkAndRemoveIfSet(int i, int j, int k) {
-
-		boolean shape = false;
-		boolean color = false;
-		boolean shading = false;
-		boolean quantity = false;
-
-		if ((table.get(i).getColor() == table.get(j).getColor() && table.get(i).getColor() == table.get(k).getColor())
-				|| (table.get(i).getColor() != table.get(j).getColor()
-						&& table.get(i).getColor() != table.get(k).getColor()
-						&& table.get(j).getColor() != table.get(k).getColor())) {
-
-			color = true;
-
-		}
-
-		if ((table.get(i).getShape() == table.get(j).getShape() && table.get(i).getShape() == table.get(k).getShape())
-				|| (table.get(i).getShape() != table.get(j).getShape()
-						&& table.get(i).getShape() != table.get(k).getShape()
-						&& table.get(j).getShape() != table.get(k).getShape())) {
-
-			shape = true;
-
-		}
-
-		if ((table.get(i).getShading() == table.get(j).getShading()
-				&& table.get(i).getShading() == table.get(k).getShading())
-				|| (table.get(i).getShading() != table.get(j).getShading()
-						&& table.get(i).getShading() != table.get(k).getShading()
-						&& table.get(j).getShading() != table.get(k).getShading())) {
-
-			shading = true;
-
-		}
-
-		if ((table.get(i).getQuantity() == table.get(j).getQuantity()
-				&& table.get(i).getQuantity() == table.get(k).getQuantity())
-				|| (table.get(i).getQuantity() != table.get(j).getQuantity()
-						&& table.get(i).getQuantity() != table.get(k).getQuantity()
-						&& table.get(j).getQuantity() != table.get(k).getQuantity())) {
-
-			quantity = true;
-
-		}
-
-		if (shape && color && shading && quantity) {
-
-			discard.add(table.remove(i));
-			discard.add(table.remove(j));
-			discard.add(table.remove(k));
-
-			return true;
-
-		} else {
-
-			return false;
-
-		}
+	
+	public void setRowCol(int r, int c){
+		this.r = r;
+		this.c = c;
 	}
 
 }
