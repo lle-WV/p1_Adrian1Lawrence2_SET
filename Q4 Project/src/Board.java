@@ -109,6 +109,8 @@ public class Board implements MouseListener {
 
 		deck = new ArrayList<Card>();
 
+		clear();
+
 		for (int i = 0; i < 3; i++) {
 
 			for (int j = 0; j < 3; j++) {
@@ -135,20 +137,13 @@ public class Board implements MouseListener {
 
 	public void deal() {
 
-		int random;
-
 		for (int i = 0; i < board2.length; i++) {
 
 			for (int j = 0; j < board2[i].length; j++) {
 
 				if (board2[i][j] == null) {
 
-					random = (int) (Math.random() * deck.size());
-
-					Card temp = deck.remove(random);
-
-					board1[i][j] = new Tile(temp.getFileName(), i, j);
-					board2[i][j] = temp;
+					add(i, j);
 
 				}
 
@@ -208,17 +203,9 @@ public class Board implements MouseListener {
 
 		if (shape && color && shading && quantity) {
 
-			discard.add(board2[rowCard1][colCard1]);
-			discard.add(board2[rowCard2][colCard2]);
-			discard.add(board2[rowCard3][colCard3]);
-
-			board1[rowCard1][colCard1] = null;
-			board1[rowCard2][colCard2] = null;
-			board1[rowCard3][colCard3] = null;
-
-			board2[rowCard1][colCard1] = null;
-			board2[rowCard2][colCard2] = null;
-			board2[rowCard3][colCard3] = null;
+			remove(rowCard1, colCard1);
+			remove(rowCard2, colCard2);
+			remove(rowCard3, colCard3);
 
 			deal();
 
@@ -229,6 +216,46 @@ public class Board implements MouseListener {
 			return false;
 
 		}
+	}
+
+	public void clear() {
+
+		for (int i = 0; i < board2.length; i++) {
+
+			for (int j = 0; j < board2[i].length; j++) {
+
+				if (board2[i][j] != null) {
+
+					remove(i, j);
+
+				}
+
+			}
+
+		}
+
+	}
+
+	public void remove(int row, int col) {
+
+		Card temp = board2[row][col];
+
+		board1[row][col] = null;
+		board2[row][col] = null;
+
+		discard.add(temp);
+
+	}
+
+	public void add(int row, int col) {
+
+		int random = (int) (Math.random() * deck.size());
+
+		Card temp = deck.remove(random);
+
+		board1[row][col] = new Tile(temp.getFileName(), row, col);
+		board2[row][col] = temp;
+
 	}
 
 }
