@@ -5,6 +5,8 @@ public class Card {
 	private int color;
 	private int shading;
 	private int quantity;
+	
+	private String fileName;
 
 	public Card(int shape, int color, int shading, int quantity) {
 
@@ -12,6 +14,8 @@ public class Card {
 		this.color = color;
 		this.shading = shading;
 		this.quantity = quantity;
+		
+		fileName = "" + shape + color + shading + quantity;
 
 	}
 
@@ -37,6 +41,12 @@ public class Card {
 
 		return quantity;
 
+	}
+	
+	public String getFileName() {
+		
+		return fileName;
+		
 	}
 
 }
