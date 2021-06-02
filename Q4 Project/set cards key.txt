@@ -1,0 +1,16 @@
+dm = 1
+ln = 2
+ov = 3
+
+green = 1
+purple = 2
+red = 3
+
+hol = 1
+hashed = 2
+full = 3
+
+amount of shapes corresponds to its 4th number
+
+i.e. 3122 is ovGreenHashed2, so 2 green ovals with
+a hashed filling
