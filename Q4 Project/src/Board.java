@@ -9,69 +9,84 @@ public class Board implements MouseListener {
 
 	private ArrayList<Card> deck;
 	private ArrayList<Card> discard;
+	private ArrayList<Tile> selectedTiles;
 
 	// size of the grid
 
-	int gridRows = 3;
-	int gridCols = 3;
+	int rows = 3;
+	int cols = 3;
 
-	Tile[][] board1 = new Tile[gridRows][gridCols];
-	Card[][] board2 = new Card[gridRows][gridCols];
+	Tile[][] board1 = new Tile[rows][cols];
+	Card[][] board2 = new Card[rows][cols];
+
+	JFrame frame;
 
 	// constructor for the mainpanel class
 
 	@Override
-	public void mouseClicked(MouseEvent arg0) {
+	public void mouseClicked(MouseEvent event) {
+		// TODO Auto-generated method stub
+
+		System.out.println(((Tile) event.getSource()).getRow());
+
+		selectedTiles.add((Tile) event.getSource());
+
+		if (selectedTiles.size() == 3) {
+
+			checkAndRemoveIfSet(selectedTiles.get(0).getRow(), selectedTiles.get(0).getCol(),
+					selectedTiles.get(1).getRow(), selectedTiles.get(1).getCol(), selectedTiles.get(2).getRow(),
+					selectedTiles.get(2).getCol());
+
+		}
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent event) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void mouseEntered(MouseEvent arg0) {
+	public void mouseExited(MouseEvent event) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void mouseExited(MouseEvent arg0) {
+	public void mousePressed(MouseEvent event) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
+	public void mouseReleased(MouseEvent event) {
 		// TODO Auto-generated method stub
 
 	}
 
 	public Board() {
 
-		JFrame f = new JFrame("SET");
+		frame = new JFrame("SET");
 
 		// Set the size of the window
 
-		f.setSize(700, 1000); // makes the tiles just the right size if each card is decreased to 20% size
+		frame.setSize(700, 1000); // makes the tiles just the right size if each card is decreased to 20% size
 
 		// exit on close method
 
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// GridLayout object
 
-		GridLayout layout = new GridLayout(gridRows, gridCols);
+		GridLayout layout = new GridLayout(rows, cols);
 
 		// set H and V gaps
 
 		layout.setHgap(10);
 		layout.setVgap(10);
 
-		f.setLayout(layout);
+		frame.setLayout(layout);
 
 		// set visible to false until player selects start
 
@@ -111,13 +126,13 @@ public class Board implements MouseListener {
 
 		clear();
 
-		for (int i = 0; i < 3; i++) {
+		for (int i = 1; i <= 3; i++) {
 
-			for (int j = 0; j < 3; j++) {
+			for (int j = 1; j <= 3; j++) {
 
-				for (int k = 0; k < 3; k++) {
+				for (int k = 1; k <= 3; k++) {
 
-					for (int l = 0; l < 3; l++) {
+					for (int l = 1; l <= 3; l++) {
 
 						deck.add(new Card(i, j, k, l));
 
@@ -131,7 +146,7 @@ public class Board implements MouseListener {
 
 		deal();
 
-		f.setVisible(true);
+		frame.setVisible(true);
 
 	}
 
@@ -254,7 +269,11 @@ public class Board implements MouseListener {
 		Card temp = deck.remove(random);
 
 		board1[row][col] = new Tile(temp.getFileName(), row, col);
+		board1[row][col].addMouseListener(this);
+
 		board2[row][col] = temp;
+
+		frame.add(board1[row][col]);
 
 	}
 
