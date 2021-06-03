@@ -15,7 +15,7 @@ public class Card {
 		this.shading = shading;
 		this.quantity = quantity;
 		
-		fileName = "" + shape + color + shading + quantity;
+		fileName = "" + shape + color + shading + quantity + ".jpg";
 
 	}
 
