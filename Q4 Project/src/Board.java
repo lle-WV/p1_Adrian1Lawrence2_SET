@@ -9,7 +9,7 @@ public class Board implements MouseListener {
 
 	private ArrayList<Card> deck;
 	private ArrayList<Card> discard;
-	private ArrayList<Tile> selectedTiles;
+	private ArrayList<Integer> selectedTiles;
 
 	// size of the grid
 
@@ -27,15 +27,16 @@ public class Board implements MouseListener {
 	public void mouseClicked(MouseEvent event) {
 		// TODO Auto-generated method stub
 
-		System.out.println(((Tile) event.getSource()).getRow());
+		int row = ((Tile) event.getSource()).getRow();
+		int col = ((Tile) event.getSource()).getCol();
 
-		selectedTiles.add((Tile) event.getSource());
+		selectedTiles.add(row);
+		selectedTiles.add(col);
 
-		if (selectedTiles.size() == 3) {
+		if (selectedTiles.size() == 6) {
 
-			checkAndRemoveIfSet(selectedTiles.get(0).getRow(), selectedTiles.get(0).getCol(),
-					selectedTiles.get(1).getRow(), selectedTiles.get(1).getCol(), selectedTiles.get(2).getRow(),
-					selectedTiles.get(2).getCol());
+			checkAndRemoveIfSet(selectedTiles.get(0), selectedTiles.get(1), selectedTiles.get(2), selectedTiles.get(3),
+					selectedTiles.get(4), selectedTiles.get(5));
 
 		}
 
@@ -123,6 +124,9 @@ public class Board implements MouseListener {
 		 */
 
 		deck = new ArrayList<Card>();
+		discard = new ArrayList<Card>();
+
+		selectedTiles = new ArrayList<Integer>();
 
 		clear();
 
