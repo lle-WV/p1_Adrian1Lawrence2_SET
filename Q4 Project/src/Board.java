@@ -162,7 +162,7 @@ public class Board implements MouseListener {
 
 				if (board2[i][j] == null) {
 
-					add(i, j);
+					replace(i, j);
 
 				}
 
@@ -222,11 +222,11 @@ public class Board implements MouseListener {
 
 		if (shape && color && shading && quantity) {
 
-			remove(rowCard1, colCard1);
-			remove(rowCard2, colCard2);
-			remove(rowCard3, colCard3);
+			replace(rowCard1, colCard1);
+			replace(rowCard2, colCard2);
+			replace(rowCard3, colCard3);
 
-			deal();
+			selectedTiles.clear();
 
 			return true;
 
@@ -245,7 +245,7 @@ public class Board implements MouseListener {
 
 				if (board2[i][j] != null) {
 
-					remove(i, j);
+					replace(i, j);
 
 				}
 
@@ -255,29 +255,25 @@ public class Board implements MouseListener {
 
 	}
 
-	public void remove(int row, int col) {
-
-		Card temp = board2[row][col];
-
-		board1[row][col] = null;
-		board2[row][col] = null;
-
-		discard.add(temp);
-
-	}
-
-	public void add(int row, int col) {
+	public void replace(int row, int col) {
 
 		int random = (int) (Math.random() * deck.size());
 
 		Card temp = deck.remove(random);
 
+		if (board1[row][col] != null) {
+
+			frame.remove(board1[row][col]);
+
+		}
+
 		board1[row][col] = new Tile(temp.getFileName(), row, col);
 		board1[row][col].addMouseListener(this);
 
-		board2[row][col] = temp;
-
 		frame.add(board1[row][col]);
+		frame.setVisible(true);
+
+		board2[row][col] = temp;
 
 	}
 
