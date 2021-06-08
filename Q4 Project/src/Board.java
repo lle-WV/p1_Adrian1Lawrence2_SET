@@ -30,6 +30,8 @@ public class Board implements MouseListener {
 		int row = ((Tile) event.getSource()).getRow();
 		int col = ((Tile) event.getSource()).getCol();
 
+		// System.out.println(board1[row][col].getFileName());
+
 		selectedTiles.add(row);
 		selectedTiles.add(col);
 
@@ -37,6 +39,8 @@ public class Board implements MouseListener {
 
 			checkAndRemoveIfSet(selectedTiles.get(0), selectedTiles.get(1), selectedTiles.get(2), selectedTiles.get(3),
 					selectedTiles.get(4), selectedTiles.get(5));
+
+			selectedTiles.clear();
 
 		}
 
@@ -225,8 +229,6 @@ public class Board implements MouseListener {
 			replace(rowCard1, colCard1);
 			replace(rowCard2, colCard2);
 			replace(rowCard3, colCard3);
-
-			selectedTiles.clear();
 
 			return true;
 
