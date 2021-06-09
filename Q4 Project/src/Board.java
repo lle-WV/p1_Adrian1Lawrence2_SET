@@ -1,44 +1,48 @@
 import java.util.ArrayList;
 import java.awt.GridLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 
-public class Board implements MouseListener {
+public class Board implements KeyListener, MouseListener {
 
 	private ArrayList<Card> deck;
 	private ArrayList<Card> discard;
 	private ArrayList<Integer> selectedTiles;
 
-	// size of the grid
+	private int rows = 3;
+	private int cols = 3;
 
-	int rows = 3;
-	int cols = 3;
-
-	Tile[][] board1 = new Tile[rows][cols];
-	Card[][] board2 = new Card[rows][cols];
+	private Tile[][] tileBoard = new Tile[rows][cols];
+	private Card[][] cardBoard = new Card[rows][cols];
 
 	JFrame frame;
 
-	// constructor for the mainpanel class
-
 	@Override
 	public void mouseClicked(MouseEvent event) {
-		// TODO Auto-generated method stub
 
 		int row = ((Tile) event.getSource()).getRow();
 		int col = ((Tile) event.getSource()).getCol();
 
-		// System.out.println(board1[row][col].getFileName());
-
 		selectedTiles.add(row);
 		selectedTiles.add(col);
 
+		System.out.println(selectedTiles.size() == 6);
+
 		if (selectedTiles.size() == 6) {
 
-			checkAndRemoveIfSet(selectedTiles.get(0), selectedTiles.get(1), selectedTiles.get(2), selectedTiles.get(3),
-					selectedTiles.get(4), selectedTiles.get(5));
+			if (isSet(cardBoard[selectedTiles.get(0)][selectedTiles.get(1)],
+					cardBoard[selectedTiles.get(2)][selectedTiles.get(3)],
+					cardBoard[selectedTiles.get(4)][selectedTiles.get(5)])) {
+
+				replace(selectedTiles.get(0), selectedTiles.get(1));
+				replace(selectedTiles.get(2), selectedTiles.get(3));
+				replace(selectedTiles.get(4), selectedTiles.get(5));
+
+			}
 
 			selectedTiles.clear();
 
@@ -46,90 +50,51 @@ public class Board implements MouseListener {
 
 	}
 
-	@Override
 	public void mouseEntered(MouseEvent event) {
-		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void mouseExited(MouseEvent event) {
-		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void mousePressed(MouseEvent event) {
-		// TODO Auto-generated method stub
 
 	}
 
-	@Override
 	public void mouseReleased(MouseEvent event) {
-		// TODO Auto-generated method stub
+
+	}
+
+	public void keyPressed(KeyEvent event) {
+
+		if (event.getKeyChar())
+		
+	}
+
+	public void keyReleased(KeyEvent event) {
+
+	}
+
+	public void keyTyped(KeyEvent event) {
 
 	}
 
 	public Board() {
 
 		frame = new JFrame("SET");
-
-		// Set the size of the window
-
-		frame.setSize(700, 1000); // makes the tiles just the right size if each card is decreased to 20% size
-
-		// exit on close method
-
+		frame.setSize(700, 1000);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		// GridLayout object
-
 		GridLayout layout = new GridLayout(rows, cols);
-
-		// set H and V gaps
 
 		layout.setHgap(10);
 		layout.setVgap(10);
 
 		frame.setLayout(layout);
 
-		// set visible to false until player selects start
-
-		// setup the board
-
-		/*
-		 * 
-		 * int random;
-		 * 
-		 * for (int r = 0; r < tiles.length; r++) {
-		 * 
-		 * for (int c = 0; c < tiles[r].length; c++) {
-		 * 
-		 * random = (int) (Math.random() * (81)) + 1;
-		 * 
-		 * String randomToString;
-		 * 
-		 * if (random < 10) {
-		 * 
-		 * randomToString = "0" + random;
-		 * 
-		 * } else {
-		 * 
-		 * randomToString = "" + random;
-		 * 
-		 * }
-		 * 
-		 * tiles[r][c] = new Tile("00" + randomToString + ".jpg", r, c);
-		 * 
-		 * // add the title to the jFrame f.add(tiles[r][c]);
-		 * 
-		 * // add mouse listener tiles[r][c].addMouseListener(this); } }
-		 * 
-		 */
-
 		deck = new ArrayList<Card>();
 		discard = new ArrayList<Card>();
-
 		selectedTiles = new ArrayList<Integer>();
 
 		clear();
@@ -160,11 +125,11 @@ public class Board implements MouseListener {
 
 	public void deal() {
 
-		for (int i = 0; i < board2.length; i++) {
+		for (int i = 0; i < cardBoard.length; i++) {
 
-			for (int j = 0; j < board2[i].length; j++) {
+			for (int j = 0; j < cardBoard[i].length; j++) {
 
-				if (board2[i][j] == null) {
+				if (cardBoard[i][j] == null) {
 
 					replace(i, j);
 
@@ -176,59 +141,46 @@ public class Board implements MouseListener {
 
 	}
 
-	public boolean checkAndRemoveIfSet(int rowCard1, int colCard1, int rowCard2, int colCard2, int rowCard3,
-			int colCard3) {
+	public boolean isSet(Card card1, Card card2, Card card3) {
 
 		boolean shape = false;
 		boolean color = false;
 		boolean shading = false;
 		boolean quantity = false;
 
-		if ((board2[rowCard1][colCard1].getColor() == board2[rowCard2][colCard2].getColor()
-				&& board2[rowCard1][colCard1].getColor() == board2[rowCard3][colCard3].getColor())
-				|| (board2[rowCard1][colCard1].getColor() != board2[rowCard2][colCard2].getColor()
-						&& board2[rowCard1][colCard1].getColor() != board2[rowCard3][colCard3].getColor()
-						&& board2[rowCard2][colCard2].getColor() != board2[rowCard3][colCard3].getColor())) {
+		if ((card1.getColor() == card2.getColor() && card1.getColor() == card3.getColor())
+				|| (card1.getColor() != card2.getColor() && card1.getColor() != card3.getColor()
+						&& card2.getColor() != card3.getColor())) {
 
 			color = true;
 
 		}
 
-		if ((board2[rowCard1][colCard1].getShape() == board2[rowCard2][colCard2].getShape()
-				&& board2[rowCard1][colCard1].getShape() == board2[rowCard3][colCard3].getShape())
-				|| (board2[rowCard1][colCard1].getShape() != board2[rowCard2][colCard2].getShape()
-						&& board2[rowCard1][colCard1].getShape() != board2[rowCard3][colCard3].getShape()
-						&& board2[rowCard2][colCard2].getShape() != board2[rowCard3][colCard3].getShape())) {
+		if ((card1.getShape() == card2.getShape() && card1.getShape() == card3.getShape())
+				|| (card1.getShape() != card2.getShape() && card1.getShape() != card3.getShape()
+						&& card2.getShape() != card3.getShape())) {
 
 			shape = true;
 
 		}
 
-		if ((board2[rowCard1][colCard1].getShading() == board2[rowCard2][colCard2].getShading()
-				&& board2[rowCard1][colCard1].getShading() == board2[rowCard3][colCard3].getShading())
-				|| (board2[rowCard1][colCard1].getShading() != board2[rowCard2][colCard2].getShading()
-						&& board2[rowCard1][colCard1].getShading() != board2[rowCard3][colCard3].getShading()
-						&& board2[rowCard2][colCard2].getShading() != board2[rowCard3][colCard3].getShading())) {
+		if ((card1.getShading() == card2.getShading() && card1.getShading() == card3.getShading())
+				|| (card1.getShading() != card2.getShading() && card1.getShading() != card3.getShading()
+						&& card2.getShading() != card3.getShading())) {
 
 			shading = true;
 
 		}
 
-		if ((board2[rowCard1][colCard1].getQuantity() == board2[rowCard2][colCard2].getQuantity()
-				&& board2[rowCard1][colCard1].getQuantity() == board2[rowCard3][colCard3].getQuantity())
-				|| (board2[rowCard1][colCard1].getQuantity() != board2[rowCard2][colCard2].getQuantity()
-						&& board2[rowCard1][colCard1].getQuantity() != board2[rowCard3][colCard3].getQuantity()
-						&& board2[rowCard2][colCard2].getQuantity() != board2[rowCard3][colCard3].getQuantity())) {
+		if ((card1.getQuantity() == card2.getQuantity() && card1.getQuantity() == card3.getQuantity())
+				|| (card1.getQuantity() != card2.getQuantity() && card1.getQuantity() != card3.getQuantity()
+						&& card2.getQuantity() != card3.getQuantity())) {
 
 			quantity = true;
 
 		}
 
-		if (shape && color && shading && quantity) {
-
-			replace(rowCard1, colCard1);
-			replace(rowCard2, colCard2);
-			replace(rowCard3, colCard3);
+		if (color && shape && shading && quantity) {
 
 			return true;
 
@@ -237,15 +189,16 @@ public class Board implements MouseListener {
 			return false;
 
 		}
+
 	}
 
 	public void clear() {
 
-		for (int i = 0; i < board2.length; i++) {
+		for (int i = 0; i < cardBoard.length; i++) {
 
-			for (int j = 0; j < board2[i].length; j++) {
+			for (int j = 0; j < cardBoard[i].length; j++) {
 
-				if (board2[i][j] != null) {
+				if (cardBoard[i][j] != null) {
 
 					replace(i, j);
 
@@ -263,19 +216,23 @@ public class Board implements MouseListener {
 
 		Card temp = deck.remove(random);
 
-		if (board1[row][col] != null) {
+		cardBoard[row][col] = temp;
 
-			frame.remove(board1[row][col]);
+		discard.add(temp);
+
+		if (tileBoard[row][col] != null) {
+
+			frame.remove(tileBoard[row][col]);
 
 		}
 
-		board1[row][col] = new Tile(temp.getFileName(), row, col);
-		board1[row][col].addMouseListener(this);
+		tileBoard[row][col] = new Tile(temp.getFileName(), row, col);
+		tileBoard[row][col].addMouseListener(this);
 
-		frame.add(board1[row][col]);
+		frame.add(tileBoard[row][col]);
 		frame.setVisible(true);
 
-		board2[row][col] = temp;
+		cardBoard[row][col] = temp;
 
 	}
 
