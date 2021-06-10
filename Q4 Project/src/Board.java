@@ -6,49 +6,71 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 public class Board implements KeyListener, MouseListener {
 
+	// The deck list contains all undealt cards
 	private ArrayList<Card> deck;
+
+	// The discard list contains all discarded cards
 	private ArrayList<Card> discard;
-	private ArrayList<Integer> selectedTiles;
 
+	private ArrayList<Integer> selectedTileIndices;
+
+	// Number of rows and columns of cards displayed on the board
 	private int rows = 3;
-	private int cols = 3;
+	private int cols = 4;
 
+	// 2D Array of tiles displayed on the JFrame
 	private Tile[][] tileBoard = new Tile[rows][cols];
+
+	// 2D Array of cards that correspond to the tiles
 	private Card[][] cardBoard = new Card[rows][cols];
 
 	JFrame frame;
 
-	@Override
 	public void mouseClicked(MouseEvent event) {
 
+		// Obtains the origin of the tile from the MouseEvent object
 		int row = ((Tile) event.getSource()).getRow();
 		int col = ((Tile) event.getSource()).getCol();
 
-		selectedTiles.add(row);
-		selectedTiles.add(col);
+		// Adds the indices of the selected tile to the selectedTileIndices list
+		selectedTileIndices.add(row);
+		selectedTileIndices.add(col);
 
-		System.out.println(selectedTiles.size() == 6);
+		// Runs if the player selects three cards (six indices)
+		if (selectedTileIndices.size() == 6) {
 
-		if (selectedTiles.size() == 6) {
+			// Runs if the three selected cards constitute a set
+			if (isSet(cardBoard[selectedTileIndices.get(0)][selectedTileIndices.get(1)],
+					cardBoard[selectedTileIndices.get(2)][selectedTileIndices.get(3)],
+					cardBoard[selectedTileIndices.get(4)][selectedTileIndices.get(5)])) {
 
-			if (isSet(cardBoard[selectedTiles.get(0)][selectedTiles.get(1)],
-					cardBoard[selectedTiles.get(2)][selectedTiles.get(3)],
-					cardBoard[selectedTiles.get(4)][selectedTiles.get(5)])) {
+				/*
+				 * Discards the three selected cards and replaces them with three new cards
+				 * randomly chosen from the deck
+				 */
 
-				replace(selectedTiles.get(0), selectedTiles.get(1));
-				replace(selectedTiles.get(2), selectedTiles.get(3));
-				replace(selectedTiles.get(4), selectedTiles.get(5));
+				replace(selectedTileIndices.get(0), selectedTileIndices.get(1));
+				replace(selectedTileIndices.get(2), selectedTileIndices.get(3));
+				replace(selectedTileIndices.get(4), selectedTileIndices.get(5));
 
 			}
 
-			selectedTiles.clear();
+			/*
+			 * Clears the player's selected cards (prevents the player from selecting more
+			 * than three cards
+			 */
+
+			selectedTileIndices.clear();
 
 		}
 
 	}
+
+	// None of these methods are necessary for the functionality of the game
 
 	public void mouseEntered(MouseEvent event) {
 
@@ -68,8 +90,46 @@ public class Board implements KeyListener, MouseListener {
 
 	public void keyPressed(KeyEvent event) {
 
-		if (event.getKeyChar())
-		
+		System.out.println("HA");
+
+		// Runs when the player presses "x" on the keyboard
+		if (event.getKeyCode() == 88) {
+
+			System.out.println("HA");
+
+			boolean containsSet = false;
+
+			/*
+			 * Cycles through all possible combinations of three cards that are displayed on
+			 * the screen and checks if any of them constitute a set
+			 */
+
+			for (int i = 0; i < rows * cols - 2; i++) {
+
+				for (int j = i + 1; j < rows * cols - 1; j++) {
+
+					for (int k = j + 1; k < rows * cols; k++) {
+
+						if (isSet(cardBoard[i % rows][i / rows], cardBoard[j % rows][j / rows],
+								cardBoard[k % rows][k / rows])) {
+
+							containsSet = true;
+
+						}
+
+					}
+
+				}
+
+			}
+
+			// Runs if no set is found
+			if (containsSet) {
+
+			}
+
+		}
+
 	}
 
 	public void keyReleased(KeyEvent event) {
@@ -85,6 +145,7 @@ public class Board implements KeyListener, MouseListener {
 		frame = new JFrame("SET");
 		frame.setSize(700, 1000);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.addKeyListener(this);
 
 		GridLayout layout = new GridLayout(rows, cols);
 
@@ -95,7 +156,7 @@ public class Board implements KeyListener, MouseListener {
 
 		deck = new ArrayList<Card>();
 		discard = new ArrayList<Card>();
-		selectedTiles = new ArrayList<Integer>();
+		selectedTileIndices = new ArrayList<Integer>();
 
 		clear();
 
