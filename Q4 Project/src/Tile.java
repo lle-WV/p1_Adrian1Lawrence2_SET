@@ -1,56 +1,78 @@
 import java.awt.Color;
-import java.awt.Toolkit;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 public class Tile extends JButton {
 
+	// Declare the necessary instance variables
+
 	private Color color;
-	private ImageIcon img1, img2; // add any other images
-	private int r, c; // possible location variables
+	private ImageIcon image;
+	private String fileName;
+
+	private int row, col;
 
 	public Tile(String fileName) {
 
-		super(); // call parent Constructor
+		// Call the parent constructor
+
+		super();
+
+		// Set the color to white
+
 		color = Color.white;
 
-		// setup icon image
-		img1 = new ImageIcon(Tile.class.getResource(fileName));
-		// setup addition images here
+		// Initialize the file name corresponding to the tile
 
-		// call parent helper methods with super
-		// this indicates it is from parent class
-		super.setIcon(img1);
+		this.fileName = fileName;
+
+		// Configure the tile image correctly
+		image = new ImageIcon(Tile.class.getResource(fileName));
+
+		// Call the parent helper methods to complete the image configuration
+
+		super.setIcon(image);
 		super.setBackground(color);
 	}
 
-	// second Tile constructor
 	public Tile(String fileName, int row, int col) {
+
+		// Call the first constructor
 
 		this(fileName);
 
-		r = row;
-		c = col;
+		// Initialize the row and column values
+
+		this.row = row;
+		this.col = col;
 
 	}
 
-	public void setRowCol(int r, int c) {
+	// Getters and setters
 
-		this.r = r;
-		this.c = c;
+	public void setRowCol(int row, int col) {
+
+		this.row = row;
+		this.col = col;
 
 	}
 
 	public int getRow() {
 
-		return r;
+		return row;
 
 	}
 
 	public int getCol() {
 
-		return c;
+		return col;
+
+	}
+
+	public String getFileName() {
+
+		return fileName;
 
 	}
 
