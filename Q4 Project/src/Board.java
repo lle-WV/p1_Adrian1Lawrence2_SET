@@ -1,72 +1,108 @@
 import java.util.ArrayList;
+
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
 
+import java.io.File;
+
+import javax.sound.sampled.AudioSystem;
+
+import javax.sound.sampled.Clip;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 
 public class Board implements KeyListener, MouseListener {
 
-	// The deck list contains all undealt cards
-	private ArrayList<Card> deck;
+	// This list contains all undealt cards
 
-	// The discard list contains all discarded cards
-	private ArrayList<Card> discard;
+	private ArrayList<Card> undealt;
+
+	// This list contains all dealt cards
+
+	private ArrayList<Card> dealt;
 
 	private ArrayList<Integer> selectedTileIndices;
 
 	// Number of rows and columns of cards displayed on the board
+
 	private int rows = 3;
-	private int cols = 4;
+	private int cols = 3;
 
 	// 2D Array of tiles displayed on the JFrame
+
 	private Tile[][] tileBoard = new Tile[rows][cols];
 
 	// 2D Array of cards that correspond to the tiles
+
 	private Card[][] cardBoard = new Card[rows][cols];
 
-	JFrame frame;
+	// Declare the JFrame and GridLayout objects
+
+	private JFrame frame;
+	private GridLayout layout;
+
+	private final File SET = new File("SET.wav");
+	private final File NO_SET = new File("NO_SET.wav");
 
 	public void mouseClicked(MouseEvent event) {
 
-		// Obtains the origin of the tile from the MouseEvent object
+		// Obtain the origin of the tile from the MouseEvent object
+
 		int row = ((Tile) event.getSource()).getRow();
 		int col = ((Tile) event.getSource()).getCol();
 
-		// Adds the indices of the selected tile to the selectedTileIndices list
+		// Add the indices of the selected tile to the selectedTileIndices list
+
 		selectedTileIndices.add(row);
 		selectedTileIndices.add(col);
 
-		// Runs if the player selects three cards (six indices)
+		System.out.println(cardBoard[row][col].getFileName());
+
+		/*
+		 * If the player selects three cards (equivalent to six indices since each card
+		 * has a corresponding row and column)
+		 */
+
 		if (selectedTileIndices.size() == 6) {
 
-			// Runs if the three selected cards constitute a set
+			// If the three selected cards constitute a set
+
 			if (isSet(cardBoard[selectedTileIndices.get(0)][selectedTileIndices.get(1)],
 					cardBoard[selectedTileIndices.get(2)][selectedTileIndices.get(3)],
 					cardBoard[selectedTileIndices.get(4)][selectedTileIndices.get(5)])) {
 
+				// Play the SET sound to indicate that the player's set is valid
+
+				playSound(SET);
+
 				/*
-				 * Discards the three selected cards and replaces them with three new cards
-				 * randomly chosen from the deck
+				 * Replace the selected cards with with new cards randomly chosen from the
+				 * undealt list
 				 */
 
-				replace(selectedTileIndices.get(0), selectedTileIndices.get(1));
-				replace(selectedTileIndices.get(2), selectedTileIndices.get(3));
-				replace(selectedTileIndices.get(4), selectedTileIndices.get(5));
+				replaceCard(selectedTileIndices.get(0), selectedTileIndices.get(1), false);
+				replaceCard(selectedTileIndices.get(2), selectedTileIndices.get(3), false);
+				replaceCard(selectedTileIndices.get(4), selectedTileIndices.get(5), false);
 
 			}
 
 			/*
-			 * Clears the player's selected cards (prevents the player from selecting more
-			 * than three cards
+			 * Clear the player's selected cards (this prevents the player from selecting
+			 * more than three cards
 			 */
 
 			selectedTileIndices.clear();
 
 		}
+
+		// Bring the frame back into focus so the KeyListener works as intended
+
+		frame.requestFocus();
 
 	}
 
@@ -90,47 +126,71 @@ public class Board implements KeyListener, MouseListener {
 
 	public void keyPressed(KeyEvent event) {
 
-		System.out.println("HA");
+		// If the escape key is pressed, close the window
 
-		// Runs when the player presses "x" on the keyboard
+		if (event.getKeyCode() == 27) {
+
+			frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+
+		}
+
+		// When the player presses "x" on the keyboard
+
 		if (event.getKeyCode() == 88) {
 
-			System.out.println("HA");
+			// Play the NO_SET sound
 
-			boolean containsSet = false;
+			playSound(NO_SET);
 
-			/*
-			 * Cycles through all possible combinations of three cards that are displayed on
-			 * the screen and checks if any of them constitute a set
-			 */
+			// If no set is found
 
-			for (int i = 0; i < rows * cols - 2; i++) {
+			if (!containsSet()) {
 
-				for (int j = i + 1; j < rows * cols - 1; j++) {
+				JOptionPane.showMessageDialog(null, "There is no set! Repopulating board...");
 
-					for (int k = j + 1; k < rows * cols; k++) {
+				// Create a list that will contain three distinct random integers
 
-						if (isSet(cardBoard[i % rows][i / rows], cardBoard[j % rows][j / rows],
-								cardBoard[k % rows][k / rows])) {
+				ArrayList<Integer> randomNums = new ArrayList<Integer>();
 
-							containsSet = true;
+				/*
+				 * Populate the list with three distinct random integers (each random integer
+				 * ranges from zero to one less than the number of tiles on the frame)
+				 */
 
-						}
+				for (int i = 0; i < 3; i++) {
+
+					int random = (int) (Math.random() * (rows * cols));
+
+					while (randomNums.contains(random)) {
+
+						random = (int) (Math.random() * (rows * cols));
 
 					}
 
+					randomNums.add(random);
+
 				}
 
-			}
+				/*
+				 * Convert the three random integers to indices and swap the cards belonging to
+				 * those indices with random cards from the undealt pile
+				 */
 
-			// Runs if no set is found
-			if (containsSet) {
+				replaceCard(randomNums.get(0) % rows, randomNums.get(0) / cols, true);
+				replaceCard(randomNums.get(1) % rows, randomNums.get(1) / cols, true);
+				replaceCard(randomNums.get(2) % rows, randomNums.get(2) / cols, true);
+
+			} else {
+
+				JOptionPane.showMessageDialog(null, "There IS a set! Look harder!");
 
 			}
 
 		}
 
 	}
+
+	// None of these methods are necessary for the functionality of the game
 
 	public void keyReleased(KeyEvent event) {
 
@@ -140,25 +200,58 @@ public class Board implements KeyListener, MouseListener {
 
 	}
 
+	public void playSound(File sound) {
+
+		// Play the sound
+
+		try {
+
+			Clip clip = AudioSystem.getClip();
+			clip.open(AudioSystem.getAudioInputStream(sound));
+			clip.start();
+
+		} catch (Exception e) {
+
+			e.printStackTrace();
+
+		}
+
+	}
+
 	public Board() {
+
+		// Initialize the JFrame object with the correct settings
 
 		frame = new JFrame("SET");
 		frame.setSize(700, 1000);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addKeyListener(this);
+		frame.getContentPane().setBackground(Color.BLUE);
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		frame.setUndecorated(true);
+		frame.setFocusable(true);
 
-		GridLayout layout = new GridLayout(rows, cols);
+		// Initialize the GridLayout object with the correct settings
 
-		layout.setHgap(10);
-		layout.setVgap(10);
+		layout = new GridLayout(rows, cols);
+		layout.setHgap(5);
+		layout.setVgap(5);
+
+		// Set the layout of the frame
 
 		frame.setLayout(layout);
 
-		deck = new ArrayList<Card>();
-		discard = new ArrayList<Card>();
+		// Initialize the lists containing undealt, dealt, and player selected cards
+
+		undealt = new ArrayList<Card>();
+		dealt = new ArrayList<Card>();
 		selectedTileIndices = new ArrayList<Integer>();
 
-		clear();
+		/*
+		 * Populate the undealt pile with all possible distinct cards (there are 81 in
+		 * total because each card can have three possible shapes, colors, shadings, and
+		 * quantities)
+		 */
 
 		for (int i = 1; i <= 3; i++) {
 
@@ -168,7 +261,7 @@ public class Board implements KeyListener, MouseListener {
 
 					for (int l = 1; l <= 3; l++) {
 
-						deck.add(new Card(i, j, k, l));
+						undealt.add(new Card(i, j, k, l));
 
 					}
 
@@ -178,7 +271,11 @@ public class Board implements KeyListener, MouseListener {
 
 		}
 
+		// Deal the cards onto the frame
+
 		deal();
+
+		// Make the frame visible to the player
 
 		frame.setVisible(true);
 
@@ -186,13 +283,18 @@ public class Board implements KeyListener, MouseListener {
 
 	public void deal() {
 
+		/*
+		 * Cycle through all indices in the 2D array of cards. If an index is null, fill
+		 * it with a card from the undealt pile
+		 */
+
 		for (int i = 0; i < cardBoard.length; i++) {
 
 			for (int j = 0; j < cardBoard[i].length; j++) {
 
 				if (cardBoard[i][j] == null) {
 
-					replace(i, j);
+					replaceCard(i, j, false);
 
 				}
 
@@ -209,6 +311,12 @@ public class Board implements KeyListener, MouseListener {
 		boolean shading = false;
 		boolean quantity = false;
 
+		/*
+		 * If the three cards are either all different colors or all the same color,
+		 * update the boolean corresponding to color to reflect that the three cards
+		 * satisfy the color condition for a SET
+		 */
+
 		if ((card1.getColor() == card2.getColor() && card1.getColor() == card3.getColor())
 				|| (card1.getColor() != card2.getColor() && card1.getColor() != card3.getColor()
 						&& card2.getColor() != card3.getColor())) {
@@ -216,6 +324,8 @@ public class Board implements KeyListener, MouseListener {
 			color = true;
 
 		}
+
+		// Repeat the same logical process for shape, shading, and quantity
 
 		if ((card1.getShape() == card2.getShape() && card1.getShape() == card3.getShape())
 				|| (card1.getShape() != card2.getShape() && card1.getShape() != card3.getShape()
@@ -241,6 +351,11 @@ public class Board implements KeyListener, MouseListener {
 
 		}
 
+		/*
+		 * Return true if the three cards satisfy the color, shape, shading, and
+		 * quantity conditions for a SET, otherwise, return false
+		 */
+
 		if (color && shape && shading && quantity) {
 
 			return true;
@@ -253,15 +368,25 @@ public class Board implements KeyListener, MouseListener {
 
 	}
 
-	public void clear() {
+	public boolean containsSet() {
 
-		for (int i = 0; i < cardBoard.length; i++) {
+		/*
+		 * Sample all possible combinations of three cards from the board and return
+		 * true if at least one of them is a set, otherwise return false
+		 */
 
-			for (int j = 0; j < cardBoard[i].length; j++) {
+		for (int i = 0; i < rows * cols - 2; i++) {
 
-				if (cardBoard[i][j] != null) {
+			for (int j = i + 1; j < rows * cols - 1; j++) {
 
-					replace(i, j);
+				for (int k = j + 1; k < rows * cols; k++) {
+
+					if (isSet(cardBoard[i % rows][i / rows], cardBoard[j % rows][j / rows],
+							cardBoard[k % rows][k / rows])) {
+
+						return true;
+
+					}
 
 				}
 
@@ -269,17 +394,48 @@ public class Board implements KeyListener, MouseListener {
 
 		}
 
+		return false;
+
 	}
 
-	public void replace(int row, int col) {
+	public void replaceCard(int row, int col, boolean swap) {
 
-		int random = (int) (Math.random() * deck.size());
+		/*
+		 * If the recycle parameter is true, execute the code that recycles the selected
+		 * card from the board back into the undealt pile, otherwise don't recycle
+		 */
 
-		Card temp = deck.remove(random);
+		if (swap) {
 
-		cardBoard[row][col] = temp;
+			/*
+			 * Swap the selected card from the board (the selected card is determined from
+			 * the index parameters) with a random card from the undealt pile
+			 */
 
-		discard.add(temp);
+			int random = (int) (Math.random() * undealt.size());
+
+			Card temp = cardBoard[row][col];
+
+			cardBoard[row][col] = undealt.remove(random);
+
+			undealt.add(temp);
+
+		} else {
+
+			/*
+			 * Replace the selected card from the board with a random card from the undealt
+			 * pile
+			 */
+
+			int random = (int) (Math.random() * undealt.size());
+
+			cardBoard[row][col] = undealt.remove(random);
+
+			dealt.add(cardBoard[row][col]);
+
+		}
+
+		// Update the corresponding 2D array of visual tiles
 
 		if (tileBoard[row][col] != null) {
 
@@ -287,13 +443,12 @@ public class Board implements KeyListener, MouseListener {
 
 		}
 
-		tileBoard[row][col] = new Tile(temp.getFileName(), row, col);
+		tileBoard[row][col] = new Tile(cardBoard[row][col].getFileName(), row, col);
 		tileBoard[row][col].addMouseListener(this);
 
 		frame.add(tileBoard[row][col]);
+		frame.requestFocus();
 		frame.setVisible(true);
-
-		cardBoard[row][col] = temp;
 
 	}
 
