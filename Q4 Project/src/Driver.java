@@ -1,7 +1,11 @@
-
 public class Driver {
 
 	public static void main(String[] args) {
-		MainPanel panel = new MainPanel();
+
+		// Call the Board constructor
+		
+		new Board();
+
 	}
+
 }
